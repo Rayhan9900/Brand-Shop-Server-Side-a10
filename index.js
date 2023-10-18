@@ -29,7 +29,7 @@ async function run() {
 
 
         const brandCollection = client.db('brandDB').collection('brand');
-        // const reviewCollection = client.db('brandDB').collection('reviews');
+
         const productCollection = client.db('brandDB').collection('products');
 
 
@@ -39,12 +39,12 @@ async function run() {
             res.send(result)
         })
 
-        app.get("/reviews", async (req, res) => {
-            const result = await reviewCollection.find().toArray();
+        app.get('/products/:BrandName', async (req, res) => {
+            const product = req.params.BrandName;
+            const result = await productCollection.find({ BrandName: product }).toArray();
             res.send(result)
+
         })
-
-
 
         app.post("/products", async (req, res) => {
             const product = req.body;
@@ -52,6 +52,7 @@ async function run() {
             console.log(result);
             res.send(result);
         });
+
 
 
 
