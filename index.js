@@ -101,14 +101,10 @@ async function run() {
         });
 
 
-        app.delete("/users/:id", async (req, res) => {
+        app.delete("/carts/:id", async (req, res) => {
             const id = req.params.id;
-            console.log("delete", id);
-            const query = {
-                _id: new ObjectId(id),
-            };
-            const result = await usersCollection.deleteOne(query);
-            console.log(result);
+            const query = { _id: new ObjectId(id), };
+            const result = await cartCollection.deleteOne(query);
             res.send(result);
         });
 
