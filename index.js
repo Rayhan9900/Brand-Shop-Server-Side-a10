@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 const app = express();
 require('dotenv').config()
@@ -31,6 +31,7 @@ async function run() {
         const brandCollection = client.db('brandDB').collection('brand');
 
         const productCollection = client.db('brandDB').collection('products');
+        const cartCollection = client.db('brandDB').collection('carts');
 
 
 
@@ -46,10 +47,60 @@ async function run() {
 
         })
 
+        app.get("/products/:id", async (req, res) => {
+            const id = req.params.id;
+            console.log(id)
+            const query = { _id: new ObjectId(id) }
+            const result = await productCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.get("/products", async (req, res) => {
+            const result = await productCollection.find().toArray();
+            res.send(result);
+        })
+
+        app.get('/crats', async (req, res) => {
+            const result = await cartCollection.find().toArray();
+            res.send(result)
+        })
+
+        app.post('/carts', async (req, res) => {
+            const carts = req.body;
+            const result = await cartCollection.insertMany(carts);
+            console.log(result);
+            res.send(result)
+        })
+
+
         app.post("/products", async (req, res) => {
             const product = req.body;
             const result = await productCollection.insertOne(product);
             console.log(result);
+            res.send(result);
+        });
+
+        app.put("/products/:id", async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            console.log("id", id, data);
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedUSer = {
+                $set: {
+                    Image: data.Image,
+                    BrandName: data, BrandName,
+                    Name: data, Name,
+                    ShortDescription: data, ShortDescription,
+                    Price: data, Price,
+                    Rating: data, Rating,
+                },
+            };
+            const result = await productCollection.updateOne(
+                filter,
+                updatedUSer,
+                options
+            );
             res.send(result);
         });
 
