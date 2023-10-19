@@ -40,9 +40,9 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/products/:BrandName', async (req, res) => {
-            const product = req.params.BrandName;
-            const result = await productCollection.find({ BrandName: product }).toArray();
+        app.get('/products', async (req, res) => {
+            const brandName = req.query.BrandName;
+            const result = await productCollection.find({ BrandName: brandName }).toArray();
             res.send(result)
 
         })
@@ -55,19 +55,16 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/products", async (req, res) => {
-            const result = await productCollection.find().toArray();
-            res.send(result);
-        })
 
-        app.get('/crats', async (req, res) => {
+
+        app.get('/carts', async (req, res) => {
             const result = await cartCollection.find().toArray();
             res.send(result)
         })
 
         app.post('/carts', async (req, res) => {
             const carts = req.body;
-            const result = await cartCollection.insertMany(carts);
+            const result = await cartCollection.insertOne(carts);
             console.log(result);
             res.send(result)
         })
@@ -83,17 +80,16 @@ async function run() {
         app.put("/products/:id", async (req, res) => {
             const id = req.params.id;
             const data = req.body;
-            console.log("id", id, data);
             const filter = { _id: new ObjectId(id) };
             const options = { upsert: true };
             const updatedUSer = {
                 $set: {
                     Image: data.Image,
-                    BrandName: data, BrandName,
-                    Name: data, Name,
-                    ShortDescription: data, ShortDescription,
-                    Price: data, Price,
-                    Rating: data, Rating,
+                    BrandName: data.BrandName,
+                    Name: data.Name,
+                    ShortDescription: data.ShortDescription,
+                    Price: data.Price,
+                    Rating: data.Rating,
                 },
             };
             const result = await productCollection.updateOne(
@@ -101,6 +97,18 @@ async function run() {
                 updatedUSer,
                 options
             );
+            res.send(result);
+        });
+
+
+        app.delete("/users/:id", async (req, res) => {
+            const id = req.params.id;
+            console.log("delete", id);
+            const query = {
+                _id: new ObjectId(id),
+            };
+            const result = await usersCollection.deleteOne(query);
+            console.log(result);
             res.send(result);
         });
 
